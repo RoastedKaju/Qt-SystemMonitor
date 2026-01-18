@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Window
 import QtQuick.Controls
 import QtQuick.Layouts
+import QtCharts
 
 Window {
     width: 800
@@ -72,6 +73,45 @@ Window {
                     id: cpu
                     text: monitorSystemInfo ? monitorSystemInfo.cpuInfo : "Loading..."
                     font.pixelSize: 18
+                }
+            }
+        }
+
+        Frame
+        {
+            Layout.alignment: Qt.AlignHCenter
+            Layout.preferredWidth: 400
+            Layout.preferredHeight: 400
+            spacing: 10
+
+            ColumnLayout
+            {
+                anchors.fill: parent
+                anchors.horizontalCenter: parent.horizontalCenter
+
+                Label
+                {
+                    Layout.alignment: Qt.AlignHCenter
+                    text: "Charts"
+                    font.bold: true
+                }
+
+                ChartView
+                {
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+                    antialiasing: true
+
+                    LineSeries
+                    {
+                        XYPoint { x: 0; y: 0 }
+                        XYPoint { x: 1.1; y: 2.1 }
+                        XYPoint { x: 1.9; y: 3.3 }
+                        XYPoint { x: 2.1; y: 2.1 }
+                        XYPoint { x: 2.9; y: 4.9 }
+                        XYPoint { x: 3.4; y: 3.0 }
+                        XYPoint { x: 4.1; y: 3.3 }
+                    }
                 }
             }
         }
