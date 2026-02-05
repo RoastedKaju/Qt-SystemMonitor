@@ -1,123 +1,158 @@
 import QtQuick
 import QtQuick.Window
 import QtQuick.Controls
+import QtQuick.Controls.Fusion
 import QtQuick.Layouts
 import QtCharts
+
+import SystemMonitor
 
 Window {
     width: 800
     height: 600
+    minimumHeight: 600
+    minimumWidth: 800
     visible: true
-    title: qsTr("Hello World")
+    title: qsTr("System Info")
 
-    ColumnLayout {
+    Rectangle {
         anchors.fill: parent
 
-        RowLayout {
-            Layout.alignment: Qt.AlignTop | Qt.AlignHCenter
-            Layout.topMargin: 25
-            spacing: 10
-            Button { text: "Click me!" }
-            Button { text: "Click me too!" }
+        gradient: Gradient {
+            orientation: Gradient.Horizontal
+            GradientStop { position: 0.0; color: "#222831" }
+            GradientStop { position: 0.5; color: "#222831" }
+            GradientStop { position: 1.0; color: "#FFE52A" }
         }
+    }
 
-        Frame {
-            Layout.alignment: Qt.AlignHCenter
-            Layout.preferredWidth: 400
-            spacing: 10
+    Rectangle {
+        anchors.fill: parent
+        anchors.margins: 25
+        radius: 10
+        color: "#393E46"
 
-            ColumnLayout {
-                anchors.horizontalCenter: parent.horizontalCenter
+        ColumnLayout {
+            anchors.fill: parent
 
-                Label {
-                    Layout.alignment: Qt.AlignHCenter
-                    text: "I am a Label"
-                    font.bold: true
-                }
-
-                Button {
-                    Layout.preferredWidth: 150
-                    Layout.preferredHeight: 50
-                    text: "Option 1"
-                    onClicked: monitorSystemInfo.onButtonClicked()
-                }
-                Button {
-                    Layout.preferredWidth: 150
-                    Layout.preferredHeight: 50
-                    text: "Option 2"
-                }
+            Label {
+                leftPadding: 8
+                topPadding: 3
+                bottomPadding: 3
+                text: "Performance"
+                font.pointSize: 11
+                font.bold: true
+                color: "white"
             }
-        }
 
-        Frame {
-            Layout.alignment: Qt.AlignHCenter
-            Layout.preferredWidth: 400
-            spacing: 10
-
-            ColumnLayout {
-                anchors.horizontalCenter: parent.horizontalCenter
-
-                Label {
-                    Layout.alignment: Qt.AlignHCenter
-                    text: "Stats"
-                    font.bold: true
-                }
-
-                Text {
-                    id: ram
-                    text: monitorSystemInfo ? monitorSystemInfo.memoryInfo : "Loading..."
-                    font.pixelSize: 18
-                }
-
-                Text {
-                    id: cpu
-                    text: monitorSystemInfo ? monitorSystemInfo.cpuInfo : "Loading..."
-                    font.pixelSize: 18
-                }
+            // Divider
+            Rectangle {
+                Layout.fillWidth: true
+                Layout.preferredHeight: 1
+                color: "grey"
             }
-        }
 
-        Frame
-        {
-            Layout.alignment: Qt.AlignHCenter
-            Layout.preferredWidth: 400
-            Layout.preferredHeight: 400
-            spacing: 10
+            // Row
+            RowLayout {
+                Layout.fillWidth: true
+                Layout.fillHeight: true
 
-            ColumnLayout
-            {
-                anchors.fill: parent
-                anchors.horizontalCenter: parent.horizontalCenter
+                Rectangle {
+                    Layout.fillHeight: true
+                    Layout.minimumWidth: 150
+                    Layout.leftMargin: 8
+                    Layout.bottomMargin: 3
+                    radius: 10
+                    color: "#808080"
 
-                Label
-                {
-                    Layout.alignment: Qt.AlignHCenter
-                    text: "Charts"
-                    font.bold: true
+                    // Sidebar
+                    ColumnLayout {
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        SidebarButton {
+                            Layout.topMargin: 15
+                            text: "CPU"
+                            onClicked: {
+                                widgetStack.replace(cpuComponent)
+                            }
+                        }
+                        SidebarButton {
+                            text: "Memory"
+                            onClicked: {
+                                widgetStack.replace(memoryComponent)
+                            }
+                        }
+                        SidebarButton {
+                            text: "Ethernet"
+                            onClicked: {
+                                widgetStack.replace(netComponent)
+                            }
+                        }
+                        SidebarButton {
+                            text: "GPU"
+                            onClicked: {
+                                widgetStack.replace(gpuComponent)
+                            }
+                        }
+                    }
                 }
 
-                ChartView
-                {
+                // Graph Area
+                Rectangle {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
-                    antialiasing: true
+                    Layout.rightMargin: 8
+                    Layout.bottomMargin: 3
+                    radius: 10
+                    color: "#808080"
 
-                    LineSeries
-                    {
-                        XYPoint { x: 0; y: 0 }
-                        XYPoint { x: 1.1; y: 2.1 }
-                        XYPoint { x: 1.9; y: 3.3 }
-                        XYPoint { x: 2.1; y: 2.1 }
-                        XYPoint { x: 2.9; y: 4.9 }
-                        XYPoint { x: 3.4; y: 3.0 }
-                        XYPoint { x: 4.1; y: 3.3 }
+                    StackView {
+                        id: widgetStack
+                        anchors.top: parent.top
+                        width: parent.width
+                        initialItem: cpuComponent
+                        replaceEnter: null
+                        replaceExit: null
+                    }
+
+                    Component {
+                        id: cpuComponent
+                        ProcessorPage {
+                            processorUtil: SystemInfo.cpuUtil
+                            processorName: SystemInfo.cpuName
+                            logicalCores: SystemInfo.logicalCores
+                            processorArchitecture: SystemInfo.architecture
+                            l1: SystemInfo.cacheSizeL1
+                            l2: SystemInfo.cacheSizeL2
+                            l3: SystemInfo.cacheSizeL3
+                        }
+                    }
+
+                    Component {
+                        id: memoryComponent
+                        MemoryPage {
+                            inUseRamGb: SystemInfo.memoryUsed
+                            totalRamGb: SystemInfo.totalMemory
+                            loadPercent: SystemInfo.memoryLoadPercent
+                            comittedGb: SystemInfo.comittedMemory
+                            pageFileString: SystemInfo.pageFile
+                        }
+                    }
+
+                    Component {
+                        id: netComponent
+                        Text {
+                            text: qsTr("Ethernet")
+                        }
+                    }
+
+                    Component {
+                        id: gpuComponent
+                        Text {
+                            text: qsTr("GPU")
+                        }
                     }
                 }
             }
-        }
-
-        Item {
-            Layout.fillHeight: true
         }
     }
 }
