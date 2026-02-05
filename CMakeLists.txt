@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.16)
 project(SystemMonitor VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_AUTORCC ON)
 
 find_package(Qt6 REQUIRED COMPONENTS Charts Core Gui Qml Quick)
 
@@ -17,6 +18,11 @@ qt_add_qml_module(appSystemMonitor
     QML_FILES
         Main.qml
         SOURCES systeminfo.h systeminfo.cpp
+        QML_FILES SidebarButton.qml
+        RESOURCES Resources.qrc
+        QML_FILES
+        QML_FILES ProcessorPage.qml
+        QML_FILES MemoryPage.qml
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
