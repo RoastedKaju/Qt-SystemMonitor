@@ -45,3 +45,6 @@
 out
 build
 .qtcreator
+
+# User Files
+CMakeLists.txt.user
