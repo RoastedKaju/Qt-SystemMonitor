@@ -50,8 +50,13 @@ public:
 
     Q_PROPERTY(QString pageFile READ pageFile CONSTANT)
 
+    Q_PROPERTY(double downloadSpeed READ downloadSpeed WRITE setDownloadSpeed NOTIFY downloadSpeedChanged FINAL)
+    double downloadSpeed() const;
+    void setDownloadSpeed(double newDownloadSpeed);
+
     void refreshCpuInfo();
     void refreshMemoryInfo();
+    void refreshEthernetInfo();
 
     // Getter functions
     QString architecture() const;
@@ -63,6 +68,7 @@ public:
 
 signals:
     void cpuUtilChanged();
+
     void cpuNameChanged();
 
     void logicalCoresChanged();
@@ -72,6 +78,8 @@ signals:
     void memoryLoadPercentChanged();
 
     void comittedMemoryChanged();
+
+    void downloadSpeedChanged();
 
 public slots:
     void updateSystemInfo();
@@ -91,6 +99,10 @@ private:
     quint64 m_memoryLoadPercent;
     float m_comittedMemory;
     QString m_pageFile;
+    double m_downloadSpeed;
+
+    quint64 m_prevBytesReceived;
+
 };
 
 #endif // SYSTEMINFO_H

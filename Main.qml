@@ -140,8 +140,8 @@ Window {
 
                     Component {
                         id: netComponent
-                        Text {
-                            text: qsTr("Ethernet")
+                        EthernetPage{
+                            speed: SystemInfo.downloadSpeed
                         }
                     }
 

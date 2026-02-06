@@ -23,6 +23,7 @@ qt_add_qml_module(appSystemMonitor
         QML_FILES
         QML_FILES ProcessorPage.qml
         QML_FILES MemoryPage.qml
+        QML_FILES EthernetPage.qml
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
@@ -44,6 +45,14 @@ target_link_libraries(appSystemMonitor
     Qt::Qml
     Qt::Quick
 )
+
+if(WIN32)
+    target_link_libraries(appSystemMonitor
+        PRIVATE
+        iphlpapi
+        ws2_32
+    )
+endif()
 
 include(GNUInstallDirs)
 install(TARGETS appSystemMonitor
