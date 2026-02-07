@@ -7,9 +7,9 @@ Three templated buttons on sidebar, which control the widget stack to display di
 - Progress bar for Memory Usage
 - Non-Editable Dial for Download Speed display.
 <div>
-    <img src="docs/cpu.jpg" alt="AppImage01" width="300"/>
-    <img src="docs/memory.jpg" alt="AppImage01" width="300"/>
-    <img src="docs/download.jpg" alt="AppImage01" width="300"/>
+    <img src="docs/cpu.jpg" alt="AppImage01" width="600"/>
+    <img src="docs/memory.jpg" alt="AppImage01" width="600"/>
+    <img src="docs/download.jpg" alt="AppImage01" width="600"/>
 </div>
 
 ## Built With
