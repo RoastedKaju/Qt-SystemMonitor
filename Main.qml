@@ -87,12 +87,6 @@ Window {
                                 widgetStack.replace(netComponent)
                             }
                         }
-                        SidebarButton {
-                            text: "GPU"
-                            onClicked: {
-                                widgetStack.replace(gpuComponent)
-                            }
-                        }
                     }
                 }
 
@@ -142,13 +136,6 @@ Window {
                         id: netComponent
                         EthernetPage{
                             speed: SystemInfo.downloadSpeed
-                        }
-                    }
-
-                    Component {
-                        id: gpuComponent
-                        Text {
-                            text: qsTr("GPU")
                         }
                     }
                 }
