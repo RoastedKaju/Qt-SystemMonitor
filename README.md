@@ -6,7 +6,7 @@ Three templated buttons on sidebar, which control the widget stack to display di
 - Qt Charts for CPU usage over last 60 seconds
 - Progress bar for Memory Usage
 - Non-Editable Dial for Download Speed display.
-<div>
+<div align="center">
     <img src="docs/cpu.jpg" alt="AppImage01" width="600"/>
     <img src="docs/memory.jpg" alt="AppImage01" width="600"/>
     <img src="docs/download.jpg" alt="AppImage01" width="600"/>
