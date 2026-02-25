@@ -4,8 +4,9 @@ project(SystemMonitor VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_AUTORCC ON)
+set(CMAKE_AUTOMOC ON)
 
-find_package(Qt6 REQUIRED COMPONENTS Charts Core Gui Qml Quick)
+find_package(Qt6 REQUIRED COMPONENTS Quick Charts Core Widgets Gui Qml)
 
 qt_standard_project_setup(REQUIRES 6.8)
 
@@ -15,15 +16,19 @@ qt_add_executable(appSystemMonitor
 
 qt_add_qml_module(appSystemMonitor
     URI SystemMonitor
+    VERSION 1.0
     QML_FILES
         Main.qml
-        SOURCES systeminfo.h systeminfo.cpp
-        QML_FILES SidebarButton.qml
         RESOURCES Resources.qrc
-        QML_FILES
-        QML_FILES ProcessorPage.qml
-        QML_FILES MemoryPage.qml
-        QML_FILES EthernetPage.qml
+        QML_FILES Utils/SidebarButton.qml
+        QML_FILES Utils/ProcessorPage.qml
+        QML_FILES Utils/MemoryPage.qml
+        QML_FILES Utils/GPUPage.qml
+        QML_FILES Utils/EthernetPage.qml
+        SOURCES Backend/processor_backend.h Backend/processor_backend.cpp
+        SOURCES Backend/memory_backend.h Backend/memory_backend.cpp
+        SOURCES Backend/gpu_backend.h Backend/gpu_backend.cpp
+        SOURCES Backend/ethernet_backend.h Backend/ethernet_backend.cpp
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
@@ -37,13 +42,18 @@ set_target_properties(appSystemMonitor PROPERTIES
     WIN32_EXECUTABLE TRUE
 )
 
+# Add hwinfo submodule
+add_subdirectory(vendor/hwinfo)
+
 target_link_libraries(appSystemMonitor
     PRIVATE
+    Qt6::Quick
     Qt::Charts
-    Qt::Core
+    Qt6::Core
+    Qt6::Widgets
     Qt::Gui
     Qt::Qml
-    Qt::Quick
+    lfreist-hwinfo::hwinfo
 )
 
 if(WIN32)
@@ -53,6 +63,8 @@ if(WIN32)
         ws2_32
     )
 endif()
+
+target_include_directories(appSystemMonitor PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Backend)
 
 include(GNUInstallDirs)
 install(TARGETS appSystemMonitor

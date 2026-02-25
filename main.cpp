@@ -1,13 +1,12 @@
 #include <QApplication>
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
-#include <QQmlContext>
-#include <QtCharts>
 #include <QIcon>
 
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
+    // Set icon
     app.setWindowIcon(QIcon(":/images/cpu.png"));
 
     QQmlApplicationEngine engine;
@@ -19,5 +18,6 @@ int main(int argc, char *argv[])
         Qt::QueuedConnection);
 
     engine.loadFromModule("SystemMonitor", "Main");
+
     return app.exec();
 }
