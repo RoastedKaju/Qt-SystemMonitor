@@ -1,28 +1,45 @@
 import QtQuick
 import QtQuick.Window
-import QtQuick.Controls
 import QtQuick.Controls.Fusion
 import QtQuick.Layouts
 import QtCharts
+import QtQuick.Shapes
 
 import SystemMonitor
+import "Utils"
 
 Window {
     width: 800
     height: 600
-    minimumHeight: 600
     minimumWidth: 800
+    minimumHeight: 600
     visible: true
-    title: qsTr("System Info")
+    title: qsTr("System Monitor")
 
     Rectangle {
         anchors.fill: parent
 
-        gradient: Gradient {
-            orientation: Gradient.Horizontal
-            GradientStop { position: 0.0; color: "#222831" }
-            GradientStop { position: 0.5; color: "#222831" }
-            GradientStop { position: 1.0; color: "#FFE52A" }
+        Shape {
+            anchors.fill: parent
+
+            ShapePath {
+                strokeWidth: 0
+
+                fillGradient: LinearGradient {
+                    x1: 0; y1: 0
+                    x2: width; y2: height
+
+                    GradientStop { position: 0.0; color: "#222831" }
+                    GradientStop { position: 0.5; color: "#222831" }
+                    GradientStop { position: 1.0; color: "#FFE52A" }
+                }
+
+                startX: 0; startY: 0
+                PathLine { x: width; y: 0 }
+                PathLine { x: width; y: height }
+                PathLine { x: 0; y: height }
+                PathLine { x: 0; y: 0 }
+            }
         }
     }
 
@@ -68,29 +85,48 @@ Window {
                     // Sidebar
                     ColumnLayout {
                         anchors.horizontalCenter: parent.horizontalCenter
+                        ButtonGroup {
+                            id: sidebarGroup
+                            exclusive: true
+                        }
+
                         SidebarButton {
                             Layout.topMargin: 15
                             text: "CPU"
+                            checkable: true
+                            checked: true            // default selected
+                            ButtonGroup.group: sidebarGroup
                             onClicked: {
-                                widgetStack.replace(cpuComponent)
+                                widgetStack.replace(cpuWidget)
                             }
                         }
                         SidebarButton {
                             text: "Memory"
+                            checkable: true
+                            ButtonGroup.group: sidebarGroup
                             onClicked: {
-                                widgetStack.replace(memoryComponent)
+                                widgetStack.replace(memoryWidget)
+                            }
+                        }
+                        SidebarButton {
+                            text: "GPU"
+                            checkable: true
+                            ButtonGroup.group: sidebarGroup
+                            onClicked: {
+                                widgetStack.replace(gpuWidget)
                             }
                         }
                         SidebarButton {
                             text: "Ethernet"
+                            checkable: true
+                            ButtonGroup.group: sidebarGroup
                             onClicked: {
-                                widgetStack.replace(netComponent)
+                                widgetStack.replace(ethernetWidget)
                             }
                         }
                     }
                 }
-
-                // Graph Area
+                // Information area
                 Rectangle {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
@@ -101,41 +137,49 @@ Window {
 
                     StackView {
                         id: widgetStack
-                        anchors.top: parent.top
+                        anchors.top:  parent.top
                         width: parent.width
-                        initialItem: cpuComponent
+                        initialItem: cpuWidget
                         replaceEnter: null
                         replaceExit: null
                     }
 
                     Component {
-                        id: cpuComponent
+                        id: cpuWidget
                         ProcessorPage {
-                            processorUtil: SystemInfo.cpuUtil
-                            processorName: SystemInfo.cpuName
-                            logicalCores: SystemInfo.logicalCores
-                            processorArchitecture: SystemInfo.architecture
-                            l1: SystemInfo.cacheSizeL1
-                            l2: SystemInfo.cacheSizeL2
-                            l3: SystemInfo.cacheSizeL3
+                            processorName: ProcessorBackend.processorName
+                            processorUtil: ProcessorBackend.cpuUtilHistory[59]
+                            processorArchitecture: ProcessorBackend.architecture
+                            logicalCores: ProcessorBackend.logicalCores
+                            physicalCores: ProcessorBackend.physicalCores
+                            l1Cache: ProcessorBackend.cacheSizes[0]
+                            l2Cache: ProcessorBackend.cacheSizes[1]
+                            l3Cache: ProcessorBackend.cacheSizes[2]
+                            clockSpeed: ProcessorBackend.clockSpeed;
                         }
                     }
-
                     Component {
-                        id: memoryComponent
+                        id: memoryWidget
                         MemoryPage {
-                            inUseRamGb: SystemInfo.memoryUsed
-                            totalRamGb: SystemInfo.totalMemory
-                            loadPercent: SystemInfo.memoryLoadPercent
-                            comittedGb: SystemInfo.comittedMemory
-                            pageFileString: SystemInfo.pageFile
+                            totalMemory: MemoryBackend.totalMemory
+                            usedMemory: MemoryBackend.usedMemory
+                            freeMemory: MemoryBackend.freeMemory
+                            vendorInfoList: MemoryBackend.vendorInfo
                         }
                     }
-
                     Component {
-                        id: netComponent
-                        EthernetPage{
-                            speed: SystemInfo.downloadSpeed
+                        id: gpuWidget
+                        GPUPage {
+                            name: GPUBackend.gpuName
+                            vendor: GPUBackend.vendorName
+                            version: GPUBackend.driverVersion
+                            memory: GPUBackend.memory
+                        }
+                    }
+                    Component {
+                        id: ethernetWidget
+                        EthernetPage {
+                            speed: EthernetBackend.downloadSpeed
                         }
                     }
                 }
